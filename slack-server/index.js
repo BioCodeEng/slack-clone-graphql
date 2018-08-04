@@ -1,15 +1,20 @@
 import express from 'express';
+import path from 'path';
 import { ApolloServer } from 'apollo-server-express';
-
-import typeDefs from './schema';
-import resolvers from './resolvers';
+import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
 import models from './models';
+
+const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schemas')));
+const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   tracing: true,
+  context: {
+    models,
+  },
   playground: {
     settings: {
       'editor.theme': 'light',
@@ -20,11 +25,10 @@ const server = new ApolloServer({
 });
 
 const app = express();
-
 server.applyMiddleware({ app });
 
 /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
 
 models.sequelize.sync({ force: true }).then(() => {
-  app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:4001${server.graphqlPath}`));
+  app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
 });

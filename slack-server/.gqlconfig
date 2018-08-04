@@ -1,0 +1,15 @@
+/* .gqlconfig */
+{
+  schema: {
+    files: '**/*.gql',
+    validate: true
+  },
+  query: {
+    files: [
+      {
+        match: '**/*.gql',
+        parser: 'QueryParser',
+      },
+    ]
+  }
+}
