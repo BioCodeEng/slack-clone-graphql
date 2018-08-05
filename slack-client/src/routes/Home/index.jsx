@@ -1,11 +1,8 @@
 import React from 'react';
-import { Query, graphql } from 'react-apollo';
+import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
-const Home = (props) => {
-  console.log('====================================');
-  console.log(props);
-  console.log('====================================');
+const Home = () => {
   return (
     <Query
       query={
@@ -68,7 +65,6 @@ const Home = (props) => {
 //     }
 //   }
 // `;
+// export default graphql(usersQuery)(Home);
 
 export default Home;
-
-//export default graphql(usersQuery)(Home);
