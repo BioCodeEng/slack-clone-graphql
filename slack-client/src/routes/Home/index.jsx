@@ -2,19 +2,18 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
+const usersQuery = gql`
+  {
+    Users {
+      id,
+      username
+    }
+  }
+`;
+
 const Home = () => {
   return (
-    <Query
-      query={
-        gql`
-        {
-          Users {
-            id,
-            username
-          }
-        }
-        `}
-    >
+    <Query query={usersQuery}>
       {({ loading, error, data }) => {
         const { Users: users } = data;
         if (loading) {
@@ -57,14 +56,6 @@ const Home = () => {
 //   );
 // };
 
-// const usersQuery = gql`
-//   {
-//     Users {
-//       id,
-//       username
-//     }
-//   }
-// `;
 // export default graphql(usersQuery)(Home);
 
 export default Home;
