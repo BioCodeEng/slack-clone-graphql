@@ -7,6 +7,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import { Container, FormContainer, FormControlStyled } from './styles';
 
@@ -19,15 +20,24 @@ const registerUser = gql`
       username: $username,
       email: $email,
       password: $password
-    )
+    ) {
+        ok,
+        errors {
+          path,
+          message
+        }
+      }
   }
 `;
 
 class Register extends Component {
   state = {
     username: '',
+    usernameError: '',
     email: '',
+    emailError: '',
     password: '',
+    passwordError: '',
     showPassword: false
   };
 
@@ -36,10 +46,26 @@ class Register extends Component {
   };
 
   onSubmit = mutate => async event => {
+    this.setState({
+      usernameError: '',
+      emailError: '',
+      passwordError: '',
+    });
     const { username, email, password } = this.state;
     const response = await mutate({
       variables: {username, email, password}
     });
+
+    const { ok, errors } = response.data.register;
+    if (ok) {
+      this.props.history.push('/');
+    } else {
+      const err = {};
+      errors.forEach(({path, message}) => {
+        err[`${path}Error`] = message;
+      });
+      this.setState(err);
+    }
   }
 
   handleMouseDownPassword = event => {
@@ -51,15 +77,21 @@ class Register extends Component {
   };
 
   render() {
-    const { username, email, password, showPassword} = this.state;
+    const {
+      username, usernameError, email, emailError, password, passwordError, showPassword
+    } = this.state;
+
     return (
       <Mutation mutation={registerUser}>
       {(mutate, data) => {
+        console.log('====================================');
+        console.log(data);
+        console.log('====================================');
         return (
           <Container>
           <FormContainer>
             <Typography variant="headline">Register</Typography>
-            <FormControlStyled>
+            <FormControlStyled error={!!usernameError}>
               <InputLabel htmlFor="username">Username</InputLabel>
               <Input
                 id="username"
@@ -68,8 +100,9 @@ class Register extends Component {
                 onChange={this.handleChange("username")}
                 fullWidth
               />
+              {!!usernameError && <FormHelperText id="name-error-text">{usernameError}</FormHelperText>}
             </FormControlStyled>
-            <FormControlStyled>
+            <FormControlStyled error={!!emailError}>
               <InputLabel htmlFor="email">Email</InputLabel>
               <Input
                 id="email"
@@ -78,8 +111,9 @@ class Register extends Component {
                 onChange={this.handleChange("email")}
                 fullWidth
               />
+              {!!emailError && <FormHelperText id="name-error-text">{emailError}</FormHelperText>}
             </FormControlStyled>
-            <FormControlStyled>
+            <FormControlStyled error={!!passwordError}>
               <InputLabel htmlFor="adornment-password">Password</InputLabel>
               <Input
                 id="adornment-password"
@@ -99,6 +133,7 @@ class Register extends Component {
                   </InputAdornment>
                 }
               />
+              {!!passwordError && <FormHelperText id="name-error-text">{passwordError}</FormHelperText>}
             </FormControlStyled>
             <Button variant="contained" color="secondary" fullWidth onClick={this.onSubmit(mutate)}>
               Register
