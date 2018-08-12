@@ -1,10 +1,10 @@
-import React, { Component } from "react";
-import IconButton from "@material-ui/core/IconButton";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Visibility from "@material-ui/icons/Visibility";
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import React, { Component } from 'react';
+import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -15,18 +15,14 @@ import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
 const registerUser = gql`
-  mutation ($username: String!, $email: String!, $password: String!) {
-    register(
-      username: $username,
-      email: $email,
-      password: $password
-    ) {
-        ok,
-        errors {
-          path,
-          message
-        }
+  mutation($username: String!, $email: String!, $password: String!) {
+    register(username: $username, email: $email, password: $password) {
+      ok
+      errors {
+        path
+        message
       }
+    }
   }
 `;
 
@@ -38,7 +34,7 @@ class Register extends Component {
     emailError: '',
     password: '',
     passwordError: '',
-    showPassword: false
+    showPassword: false,
   };
 
   handleChange = prop => event => {
@@ -53,7 +49,7 @@ class Register extends Component {
     });
     const { username, email, password } = this.state;
     const response = await mutate({
-      variables: {username, email, password}
+      variables: { username, email, password },
     });
 
     const { ok, errors } = response.data.register;
@@ -61,12 +57,12 @@ class Register extends Component {
       this.props.history.push('/');
     } else {
       const err = {};
-      errors.forEach(({path, message}) => {
+      errors.forEach(({ path, message }) => {
         err[`${path}Error`] = message;
       });
       this.setState(err);
     }
-  }
+  };
 
   handleMouseDownPassword = event => {
     event.preventDefault();
@@ -78,72 +74,92 @@ class Register extends Component {
 
   render() {
     const {
-      username, usernameError, email, emailError, password, passwordError, showPassword
+      username,
+      usernameError,
+      email,
+      emailError,
+      password,
+      passwordError,
+      showPassword,
     } = this.state;
 
     return (
       <Mutation mutation={registerUser}>
-      {(mutate, data) => {
-        console.log('====================================');
-        console.log(data);
-        console.log('====================================');
-        return (
-          <Container>
-          <FormContainer>
-            <Typography variant="headline">Register</Typography>
-            <FormControlStyled error={!!usernameError}>
-              <InputLabel htmlFor="username">Username</InputLabel>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={this.handleChange("username")}
-                fullWidth
-              />
-              {!!usernameError && <FormHelperText id="name-error-text">{usernameError}</FormHelperText>}
-            </FormControlStyled>
-            <FormControlStyled error={!!emailError}>
-              <InputLabel htmlFor="email">Email</InputLabel>
-              <Input
-                id="email"
-                type="text"
-                value={email}
-                onChange={this.handleChange("email")}
-                fullWidth
-              />
-              {!!emailError && <FormHelperText id="name-error-text">{emailError}</FormHelperText>}
-            </FormControlStyled>
-            <FormControlStyled error={!!passwordError}>
-              <InputLabel htmlFor="adornment-password">Password</InputLabel>
-              <Input
-                id="adornment-password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={this.handleChange("password")}
-                fullWidth
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="Toggle password visibility"
-                      onClick={this.handleClickShowPassword}
-                      onMouseDown={this.handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              {!!passwordError && <FormHelperText id="name-error-text">{passwordError}</FormHelperText>}
-            </FormControlStyled>
-            <Button variant="contained" color="secondary" fullWidth onClick={this.onSubmit(mutate)}>
-              Register
-            </Button>
-          </FormContainer>
-        </Container>
-        )
-      }}
+        {(mutate, data) => {
+          console.log('====================================');
+          console.log(data);
+          console.log('====================================');
+          return (
+            <Container>
+              <FormContainer>
+                <Typography variant="headline">Register</Typography>
+                <FormControlStyled error={!!usernameError}>
+                  <InputLabel htmlFor="username">Username</InputLabel>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={this.handleChange('username')}
+                    fullWidth
+                  />
+                  {!!usernameError && (
+                    <FormHelperText id="name-error-text">
+                      {usernameError}
+                    </FormHelperText>
+                  )}
+                </FormControlStyled>
+                <FormControlStyled error={!!emailError}>
+                  <InputLabel htmlFor="email">Email</InputLabel>
+                  <Input
+                    id="email"
+                    type="text"
+                    value={email}
+                    onChange={this.handleChange('email')}
+                    fullWidth
+                  />
+                  {!!emailError && (
+                    <FormHelperText id="name-error-text">
+                      {emailError}
+                    </FormHelperText>
+                  )}
+                </FormControlStyled>
+                <FormControlStyled error={!!passwordError}>
+                  <InputLabel htmlFor="adornment-password">Password</InputLabel>
+                  <Input
+                    id="adornment-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={this.handleChange('password')}
+                    fullWidth
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="Toggle password visibility"
+                          onClick={this.handleClickShowPassword}
+                          onMouseDown={this.handleMouseDownPassword}>
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                  />
+                  {!!passwordError && (
+                    <FormHelperText id="name-error-text">
+                      {passwordError}
+                    </FormHelperText>
+                  )}
+                </FormControlStyled>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  fullWidth
+                  onClick={this.onSubmit(mutate)}>
+                  Register
+                </Button>
+              </FormContainer>
+            </Container>
+          );
+        }}
       </Mutation>
-
     );
   }
 }
