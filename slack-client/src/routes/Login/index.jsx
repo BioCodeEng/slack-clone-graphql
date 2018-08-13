@@ -12,6 +12,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import { Container, FormContainer, FormControlStyled } from './styles';
 
@@ -36,6 +37,7 @@ class Login extends Component {
       email: '',
       password: '',
       showPassword: false,
+      errors: {},
     });
   }
 
@@ -45,14 +47,28 @@ class Login extends Component {
   }
 
   onSubmit = async () => {
+    this.errors = {};
     const { email, password } = this;
-    const { mutate } = this.props;
+    const { mutate, history } = this.props;
     const response = await mutate({ variables: { email, password } });
-    const { ok, token, refreshToken } = response.data.login;
+    const {
+      ok, token, refreshToken, errors,
+    } = response.data.login;
     if (ok) {
       localStorage.setItem('token', token);
       localStorage.setItem('refreshToken', refreshToken);
+      history.push('/');
+    } else {
+      const err = {};
+      errors.forEach(({ path, message }) => {
+        err[`${path}Error`] = message;
+      });
+
+      this.errors = err;
     }
+    console.log('====================================');
+    console.log(response, this.errors);
+    console.log('====================================');
   }
 
   handleMouseDownPassword = (event) => {
@@ -64,7 +80,9 @@ class Login extends Component {
   };
 
   render() {
-    const { email, password, showPassword } = this;
+    const {
+      email, password, showPassword, errors: { emailError, passwordError },
+    } = this;
     return (
       <Container>
         <FormContainer>
@@ -72,7 +90,7 @@ class Login extends Component {
             Login
           </Typography>
 
-          <FormControlStyled>
+          <FormControlStyled error={!!emailError}>
             <InputLabel htmlFor="email">
               Email
             </InputLabel>
@@ -84,8 +102,13 @@ class Login extends Component {
               onChange={this.onChange}
               fullWidth
             />
+            {!!emailError && (
+              <FormHelperText id="name-error-text">
+                {emailError}
+              </FormHelperText>
+            )}
           </FormControlStyled>
-          <FormControlStyled>
+          <FormControlStyled error={!!passwordError}>
             <InputLabel htmlFor="adornment-password">
               Password
             </InputLabel>
@@ -108,6 +131,11 @@ class Login extends Component {
                 </InputAdornment>
               )}
             />
+            {!!passwordError && (
+              <FormHelperText id="name-error-text">
+                {passwordError}
+              </FormHelperText>
+            )}
           </FormControlStyled>
           <Button
             variant="contained"
