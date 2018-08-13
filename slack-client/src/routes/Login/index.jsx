@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { extendObservable } from 'mobx';
 import { observer } from 'mobx-react';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+
 import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -9,9 +12,22 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import FormHelperText from '@material-ui/core/FormHelperText';
 
 import { Container, FormContainer, FormControlStyled } from './styles';
+
+const loginMutation = gql`
+  mutation($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      ok
+      token
+      refreshToken
+      errors {
+        path
+        message
+      }
+    }
+  }
+`;
 
 class Login extends Component {
   constructor(props) {
@@ -28,8 +44,14 @@ class Login extends Component {
     this[name] = value;
   }
 
-  onSubmit = () => {
-    console.log(this);
+  onSubmit = async () => {
+    const { email, password } = this;
+    const response = await this.props.mutate({ variables: { email, password }});
+    const { ok, token, refreshToken } = response.data.login;
+    if (ok) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
+    }
   }
 
   handleMouseDownPassword = event => {
@@ -93,4 +115,4 @@ class Login extends Component {
   }
 }
 
-export default observer(Login);
+export default graphql(loginMutation)(observer(Login));
