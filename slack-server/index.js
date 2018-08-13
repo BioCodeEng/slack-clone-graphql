@@ -8,6 +8,9 @@ import models from './models';
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schemas')));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
 
+const SECRET = 'something';
+const SECRET2 = 'somethingelse';
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -21,6 +24,8 @@ const server = new ApolloServer({
 
   context: {
     models,
+    SECRET,
+    SECRET2,
     user: {
       id: 1,
     },
