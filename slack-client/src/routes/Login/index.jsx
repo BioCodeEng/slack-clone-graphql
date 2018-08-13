@@ -35,18 +35,19 @@ class Login extends Component {
     extendObservable(this, {
       email: '',
       password: '',
-      showPassword: false
+      showPassword: false,
     });
   }
 
-  onChange = e => {
+  onChange = (e) => {
     const { name, value } = e.target;
     this[name] = value;
   }
 
   onSubmit = async () => {
     const { email, password } = this;
-    const response = await this.props.mutate({ variables: { email, password }});
+    const { mutate } = this.props;
+    const response = await mutate({ variables: { email, password } });
     const { ok, token, refreshToken } = response.data.login;
     if (ok) {
       localStorage.setItem('token', token);
@@ -54,12 +55,12 @@ class Login extends Component {
     }
   }
 
-  handleMouseDownPassword = event => {
+  handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
   handleClickShowPassword = () => {
-    this.showPassword = !this.showPassword
+    this.showPassword = !this.showPassword;
   };
 
   render() {
@@ -67,10 +68,14 @@ class Login extends Component {
     return (
       <Container>
         <FormContainer>
-          <Typography variant="headline">Login</Typography>
+          <Typography variant="headline">
+            Login
+          </Typography>
 
           <FormControlStyled>
-            <InputLabel htmlFor="email">Email</InputLabel>
+            <InputLabel htmlFor="email">
+              Email
+            </InputLabel>
             <Input
               id="email"
               name="email"
@@ -81,7 +86,9 @@ class Login extends Component {
             />
           </FormControlStyled>
           <FormControlStyled>
-            <InputLabel htmlFor="adornment-password">Password</InputLabel>
+            <InputLabel htmlFor="adornment-password">
+              Password
+            </InputLabel>
             <Input
               id="adornment-password"
               name="password"
@@ -89,16 +96,17 @@ class Login extends Component {
               value={password}
               onChange={this.onChange}
               fullWidth
-              endAdornment={
+              endAdornment={(
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="Toggle password visibility"
                     onClick={this.handleClickShowPassword}
-                    onMouseDown={this.handleMouseDownPassword}>
+                    onMouseDown={this.handleMouseDownPassword}
+                  >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
-              }
+              )}
             />
           </FormControlStyled>
           <Button
